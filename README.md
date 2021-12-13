@@ -1,306 +1,263 @@
-Contribution: 2021-05-27 20:00
+# Solana Wallet Cross-Platform App with Expo, Web3 & React Native
 
-Contribution: 2021-05-27 20:01
+This is a simple Solana Wallet Cross-Platform App built with Expo, Web3 & React Native to learn about web3.
 
-Contribution: 2021-05-27 20:02
+## Screens and Features
 
-Contribution: 2021-05-27 20:03
+### Welcome
 
-Contribution: 2021-05-27 20:04
+This screen only shows a button to start!
 
-Contribution: 2021-05-27 20:05
+![Welcome](https://moviendo.me/building-a-solana-wallet-cross-platform-app-with-expo-web3-and-react-native/welcome-1e53e78c.png)
 
-Contribution: 2021-05-27 20:06
 
-Contribution: 2021-05-27 20:07
+### Create your passcode
 
-Contribution: 2021-05-29 20:00
+This screen let you create a passcode that for now is only requested when you want to see your recovery phrase.
 
-Contribution: 2021-05-29 20:01
+Later, it can be used to encrypt the seed, before doing a transfer or even to access to the full app.
 
-Contribution: 2021-05-29 20:02
 
-Contribution: 2021-05-29 20:03
+![Passcode](https://moviendo.me/building-a-solana-wallet-cross-platform-app-with-expo-web3-and-react-native/passcode-085e77c7.png)
 
-Contribution: 2021-05-29 20:04
 
-Contribution: 2021-05-29 20:05
+### Dashboard
 
-Contribution: 2021-05-29 20:06
+This screen shows the account balance and soon it will show the Activity of the account.
 
-Contribution: 2021-05-29 20:07
+Also, it is where I placed the Navigation using a floating action button (component provided by [React Native Paper](https://callstack.github.io/react-native-paper/fab-group.html))
 
-Contribution: 2021-05-29 20:08
 
-Contribution: 2021-05-29 20:09
+![Dashboard](https://moviendo.me/building-a-solana-wallet-cross-platform-app-with-expo-web3-and-react-native/dashboard-3355a428.png)
 
-Contribution: 2021-05-29 20:10
 
-Contribution: 2021-05-29 20:11
+Get account balance with web3:
 
-Contribution: 2021-05-31 20:00
+~~~javascript
+const getBalance = async (publicKey) => {
+  const connection = createConnection();
+  const _publicKey = publicKeyFromString(publicKey);
 
-Contribution: 2021-05-31 20:01
+  const lamports = await connection.getBalance(_publicKey).catch((err) => {
+    console.error(`Error: ${err}`);
+  });
 
-Contribution: 2021-05-31 20:02
+  const sol = lamports / LAMPORTS_PER_SOL;
+  return sol;
+};
+~~~
 
-Contribution: 2021-05-31 20:03
+### Receive
 
-Contribution: 2021-05-31 20:04
+This screen shows the address and a qr to make easier receive tokens.
 
-Contribution: 2021-05-31 20:05
 
-Contribution: 2021-05-31 20:06
+![Receive](https://moviendo.me/building-a-solana-wallet-cross-platform-app-with-expo-web3-and-react-native/receive-f0315e76.png)
 
-Contribution: 2021-05-31 20:07
 
-Contribution: 2021-05-31 20:08
+### Send
 
-Contribution: 2021-05-31 20:09
+This screen allows you to send tokens to other accounts typing the address or scanning a qr code.
 
-Contribution: 2021-05-31 20:10
+Also, this screen shows the current price of SOL, SOL available in the account and convert the introduced amount to USD.
 
-Contribution: 2021-06-02 20:00
+Validations are pending!
 
-Contribution: 2021-06-02 20:01
+![Send](https://moviendo.me/building-a-solana-wallet-cross-platform-app-with-expo-web3-and-react-native/send-43b69182.png)
 
-Contribution: 2021-06-02 20:02
+Create transaction with web3:
 
-Contribution: 2021-06-02 20:03
+~~~javascript
+const transaction = async (from, to, amount) => {
+  const account = accountFromSeed(from.seed);
 
-Contribution: 2021-06-02 20:04
+  console.log("Executing transaction...");
+  console.log(amount);
 
-Contribution: 2021-06-02 20:05
+  const transaction = new solanaWeb3.Transaction().add(
+    solanaWeb3.SystemProgram.transfer({
+      fromPubkey: publicKeyFromString(from.account),
+      toPubkey: publicKeyFromString(to),
+      lamports: amount * LAMPORTS_PER_SOL,
+    })
+  );
 
-Contribution: 2021-06-02 20:06
+  // Sign transaction, broadcast, and confirm
+  const connection = createConnection();
+  const signature = await solanaWeb3.sendAndConfirmTransaction(
+    connection,
+    transaction,
+    [account]
+  );
+  console.log("SIGNATURE", signature);
+};
 
-Contribution: 2021-06-02 20:07
+~~~
 
-Contribution: 2021-06-02 20:08
+Get Solana price using [Coingecko](https://www.coingecko.com) API:
 
-Contribution: 2021-06-02 20:09
+~~~javascript
+const getSolanaPrice = async () => {
+  const response = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd`,
+    {
+      method: "GET",
+    }
+  );
 
-Contribution: 2021-06-03 20:00
+  const data = await response.json();
+  return data.solana.usd;
+};
 
-Contribution: 2021-06-04 20:00
+~~~
 
-Contribution: 2021-06-04 20:01
+### Settings
 
-Contribution: 2021-06-04 20:02
+This screen shows two options:
 
-Contribution: 2021-06-04 20:03
+![Settings](https://moviendo.me/building-a-solana-wallet-cross-platform-app-with-expo-web3-and-react-native/settings-c2f36be5.png)
 
-Contribution: 2021-06-04 20:04
+#### Backup
 
-Contribution: 2021-06-04 20:05
+To access to recovery phrase. Before ask for passcode.
 
-Contribution: 2021-06-04 20:06
+#### Request Airdrop
 
-Contribution: 2021-06-04 20:07
+This app is configured to connect to dev network so the tokens showed are not real.
 
-Contribution: 2021-06-04 20:08
+Good thing is that every time you press here you get 1 SOL in your account that can be used to test the app, make transfers...
 
-Contribution: 2021-06-04 20:09
+Request an Airdrop in dev mode with web3:
 
-Contribution: 2021-06-04 20:10
+~~~javascript
+const requestAirDrop = async (publicKeyString: string) => {
+  const connection = createConnection();
 
-Contribution: 2021-06-04 20:11
+  const airdropSignature = await connection.requestAirdrop(
+    publicKeyFromString(publicKeyString),
+    LAMPORTS_PER_SOL
+  );
 
-Contribution: 2021-06-05 20:00
+  const signature = await connection.confirmTransaction(airdropSignature);
+  return signature;
+};
+~~~
 
-Contribution: 2021-06-05 20:01
+## What I used to build this Solana Wallet
 
-Contribution: 2021-06-05 20:02
+### Expo
+Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.
+ - [Expo](https://expo.io/)
 
-Contribution: 2021-06-05 20:03
 
-Contribution: 2021-06-05 20:04
+### Solana/web3.js
+This is the Solana Javascript API built on the Solana JSON RPC API.
+ - [Solana/web3.js](https://solana-labs.github.io/solana-web3.js/)
 
-Contribution: 2021-06-05 20:05
+### Easy Peasy
+Vegetarian friendly state for React.
+ - [Easy Peasy](https://easy-peasy.vercel.app/)
 
-Contribution: 2021-06-05 20:06
+### React Native Paper
+Paper is a collection of customizable and production-ready components for React Native, following Google’s Material Design guidelines.
+ - [React Native Paper](https://callstack.github.io/react-native-paper/)
 
-Contribution: 2021-06-05 20:07
+### React Navigation
+Routing and navigation for Expo and React Native apps.
+ - [React Navigation](https://reactnavigation.org/)
 
-Contribution: 2021-06-06 20:00
+### More
 
-Contribution: 2021-06-06 20:01
+Moreover I used other libraries for crypto, qr generate and scan...
 
-Contribution: 2021-06-06 20:02
+You can check them in [package.json](https://github.com/jferrer/expo-solana-wallet/blob/main/package.json)
 
-Contribution: 2021-06-06 20:03
+## Problems that I found and workarounds to solve them
 
-Contribution: 2021-06-06 20:04
+### Crypto dependency
 
-Contribution: 2021-06-06 20:05
+`solana/web3.js` needs `Crypto` that it seems that now it's included in NodeJS but no in React Native and although I found some ways to have it working in React Native I didn't find a w
+ay to do it without ejecting the app from Expo.
 
-Contribution: 2021-06-06 20:06
+Finally I found a workaround that basically uses `ethers.js` and `expo-random` to be able to generate mnemonic and seed. Later, I was able to use `solana/web3.js` without issues to conn
+ect to the network, get balance, transfer...
 
-Contribution: 2021-06-07 20:00
+~~~javascript
+const generateMnemonic = async () => {
+  const randomBytes = await Random.getRandomBytesAsync(32);
+  const mnemonic = ethers.utils.entropyToMnemonic(randomBytes);
+  return mnemonic;
+};
 
-Contribution: 2021-06-07 20:01
+const mnemonicToSeed = (mnemonic: string) => {
+  const seed = ethers.utils.mnemonicToSeed(mnemonic);
+  return seed;
+};
 
-Contribution: 2021-06-07 20:02
+const accountFromSeed = (seed: string) => {
+  const hex = Uint8Array.from(Buffer.from(seed));
+  const keyPair = nacl.sign.keyPair.fromSeed(hex.slice(0, 32));
+  const account = new solanaWeb3.Account(keyPair.secretKey);
+  return account;
+};
+~~~
 
-Contribution: 2021-06-07 20:03
+### Metro has encountered an error trying to resolve module 'superstruct'
 
-Contribution: 2021-06-07 20:04
+Here the problem seems to be that the package entrypoint is a CommmonJS file. To solve it I added `.cjs` files to `metro.config.js`
 
-Contribution: 2021-06-07 20:05
+~~~javascript
+module.exports = {
+  resolver: {
+    sourceExts: ["jsx", "js", "ts", "tsx", "cjs"],
+  },
+};
+~~~
 
-Contribution: 2021-06-08 20:00
+### Some RN URL methods have no implementation
 
-Contribution: 2021-06-08 20:01
+React Native `react-native/Libraries/Blob/URL.js` has no implementation for some methods.
 
-Contribution: 2021-06-08 20:02
+Before, I was changing the 2 methods (`protocol` and `port`) manually but every time that I run `yarn` back to normal.
 
-Contribution: 2021-06-08 20:03
+After a bit of research it seems that RN doesn't include this because the full implementation will increase a lot the size of the bundle but can be solved adding `react-native-url-polyf
+ill` package.
 
-Contribution: 2021-06-08 20:04
+~~~bash
+$ yarn add react-native-url-polyfill
+~~~
 
-Contribution: 2021-06-08 20:05
+~~~javascript
+# App.tsx
+...
+import "react-native-url-polyfill/auto";
+...
+~~~
 
-Contribution: 2021-06-09 20:00
 
-Contribution: 2021-06-09 20:01
+## What's next
 
-Contribution: 2021-06-09 20:02
+- Continue cleaning the code and remove packages that I'm not using anymore.
+- Design doesn't adjust well. I used a [Background](https://www.freepik.com/free-vector/retro-futuristic-landscape-background-with-sun_5072269.htm#page=1&query=sun%20future&position=12)
+ only to see it nice when I was building.
+- Give option to connect to Mainnet.
+- Let the option to generate derived accounts, encrypt seed phrase...
+- Integration with [Serum](https://projectserum.com/#/) for Swaps.
+- Run as Browser Extension.
 
-Contribution: 2021-06-09 20:03
+## Final
+My goal with this was to learn the Web3 basics building something simple and sharing 100% of the code between Web and Native.
 
-Contribution: 2021-06-09 20:04
+I think it has been a good introduction to see how Web3 works.
 
-Contribution: 2021-06-09 20:05
 
-Contribution: 2021-06-09 20:06
+## Run it:
 
-Contribution: 2021-06-09 20:07
+~~~bash
+$ git clone https://github.com/jferrer/expo-solana-wallet.git
+$ cd expo-solana-wallet
+$ yarn install
+$ expo web or expo start
+~~~
 
-Contribution: 2021-06-09 20:08
-
-Contribution: 2021-06-09 20:09
-
-Contribution: 2021-06-10 20:00
-
-Contribution: 2021-06-10 20:01
-
-Contribution: 2021-06-10 20:02
-
-Contribution: 2021-06-10 20:03
-
-Contribution: 2021-06-10 20:04
-
-Contribution: 2021-06-10 20:05
-
-Contribution: 2021-06-10 20:06
-
-Contribution: 2021-06-10 20:07
-
-Contribution: 2021-06-10 20:08
-
-Contribution: 2021-06-10 20:09
-
-Contribution: 2021-06-10 20:10
-
-Contribution: 2021-06-10 20:11
-
-Contribution: 2021-06-11 20:00
-
-Contribution: 2021-06-11 20:01
-
-Contribution: 2021-06-11 20:02
-
-Contribution: 2021-06-11 20:03
-
-Contribution: 2021-06-11 20:04
-
-Contribution: 2021-06-11 20:05
-
-Contribution: 2021-06-11 20:06
-
-Contribution: 2021-06-11 20:07
-
-Contribution: 2021-06-11 20:08
-
-Contribution: 2021-06-13 20:00
-
-Contribution: 2021-06-13 20:01
-
-Contribution: 2021-06-15 20:00
-
-Contribution: 2021-06-15 20:01
-
-Contribution: 2021-06-15 20:02
-
-Contribution: 2021-06-15 20:03
-
-Contribution: 2021-06-15 20:04
-
-Contribution: 2021-06-15 20:05
-
-Contribution: 2021-06-15 20:06
-
-Contribution: 2021-06-15 20:07
-
-Contribution: 2021-06-15 20:08
-
-Contribution: 2021-06-15 20:09
-
-Contribution: 2021-06-17 20:00
-
-Contribution: 2021-06-18 20:00
-
-Contribution: 2021-06-18 20:01
-
-Contribution: 2021-06-18 20:02
-
-Contribution: 2021-06-18 20:03
-
-Contribution: 2021-06-18 20:04
-
-Contribution: 2021-06-18 20:05
-
-Contribution: 2021-06-18 20:06
-
-Contribution: 2021-06-18 20:07
-
-Contribution: 2021-06-19 20:00
-
-Contribution: 2021-06-20 20:00
-
-Contribution: 2021-06-20 20:01
-
-Contribution: 2021-06-21 20:00
-
-Contribution: 2021-06-21 20:01
-
-Contribution: 2021-06-21 20:02
-
-Contribution: 2021-06-21 20:03
-
-Contribution: 2021-06-21 20:04
-
-Contribution: 2021-06-22 20:00
-
-Contribution: 2021-06-22 20:01
-
-Contribution: 2021-06-22 20:02
-
-Contribution: 2021-06-22 20:03
-
-Contribution: 2021-06-22 20:04
-
-Contribution: 2021-06-22 20:05
-
-Contribution: 2021-06-22 20:06
-
-Contribution: 2021-06-22 20:07
-
-Contribution: 2021-06-23 20:00
-
-Contribution: 2021-06-23 20:01
-
-Contribution: 2021-06-23 20:02
-
-Contribution: 2021-06-23 20:03
-
+Or install apk for Android from [Expo](https://exp-shell-app-assets.s3.us-west-1.amazonaws.com/android/%40moviendome/wallet-f98978804d7345ce89d4aac7046449de-signed.apk)
